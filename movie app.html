@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>movie app</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+
+        form {
+            background-color: black;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+        }
+
+        .movie-container {
+            margin: 20px 0;
+        }
+
+        .movie-container select {
+            background-color: #fff;
+            border: 0;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+            padding: 5px 15px 5px 15px;
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .seat {
+            background-color: #444451;
+            height: 12px;
+            width: 15px;
+            margin: 3px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .seat.selected {
+            background-color: red;
+        }
+
+        .seat.occupied {
+            background-color: blue;
+        }
+
+        .seat:nth-of-type(2) {
+            margin-right: 18px;
+        }
+
+        .seat:nth-last-of-type(2) {
+            margin-left: 18px;
+        }
+
+        .seat:not(.occupied):hover {
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+
+        .showcase .seat:not(.occupied):hover {
+            cursor: default;
+            transform: scale(1);
+        }
+
+        .showcase {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #777;
+            list-style-type: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .showcase li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+
+        .showcase li small {
+            margin-left: 2px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .screen {
+            background-color: gray;
+            height: 70px;
+            width: 100%;
+            margin: 15px 0;
+            transform: rotateX(-55deg);
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7);
+        }
+
+        p.text {
+            margin: 5px 0;
+        }
+
+        p.text span {
+            color: #6feaf6;
+        }
+      
+    </style>
+</head>
+
+<body>
+    <form>
+        <div class="movie-container">
+            <label>Pick a movie:</label>
+            <select id="movie">
+                <option value="10">Spiderman: No Way Home ($10)</option>
+                <option value="12">The Batman ($12)</option>
+                <option value="8">The Matrix ($8)</option>
+                <option value="9">Last Night in Soho ($9)</option>
+            </select>
+        </div>
+
+        <ul class="showcase">
+            <li>
+                <div class="seat"></div>
+                <small>N/A</small>
+            </li>
+            <li>
+                <div class="seat selected"></div>
+                <small>Selected</small>
+            </li>
+            <li>
+                <div class="seat occupied"></div>
+                <small>Occupied</small>
+            </li>
+        </ul>
+
+        <div class="container">
+            <div class="screen"></div>
+
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+            </div>
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat occupied"></div>
+                <div class="seat occupied"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+            </div>
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat occupied"></div>
+                <div class="seat occupied"></div>
+            </div>
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+            </div>
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat occupied"></div>
+                <div class="seat occupied"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+            </div>
+            <div class="row">
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat"></div>
+                <div class="seat occupied"></div>
+                <div class="seat occupied"></div>
+                <div class="seat occupied"></div>
+                <div class="seat"></div>
+            </div>
+        </div>
+
+        <p class="text">
+            You have selected <span id="count">0</span> seats for a price of $<span id="total">0</span>
+        </p>
+      
+    </form>
+
+        <script>
+            let movieSelect = document.getElementById('movie');
+            let seats = document.querySelectorAll('.row .seat:not(.occupied)');
+            let count = document.getElementById('count');
+            let total = document.getElementById('total');
+            let resetButton = document.getElementById('reset');
+
+            function populateUI() {
+                let selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
+                let selectedMovieIndex = localStorage.getItem('selectedMovieIndex');
+
+                if (selectedSeats.length > 0) {
+                    seats.forEach((seat, index) => {
+                        if (selectedSeats.indexOf(index) > -1) {
+                            seat.classList.add('selected');
+                        }
+                    });
+                }
+
+                if (selectedMovieIndex !== null) {
+                    movieSelect.selectedIndex = parseInt(selectedMovieIndex);
+                }
+            }
+
+            function updateSelectedMovie() {
+                localStorage.setItem('selectedMovieIndex', movieSelect.selectedIndex.toString());
+            }
+
+            function updateSelectedSeats() {
+                let selectedSeats = document.querySelectorAll('.row .seat.selected');
+                let seatsIndex = [...selectedSeats].map(seat => [...seats].indexOf(seat));
+                localStorage.setItem('selectedSeats', JSON.stringify(seatsIndex));
+            }
+
+            function updateSelectedCount() {
+                let selectedSeats = document.querySelectorAll('.row .seat.selected');
+                let seatCount = selectedSeats.length;
+                count.innerText = seatCount;
+                total.innerText = seatCount * movieSelect.value;
+            }
+
+            movieSelect.addEventListener('change', () => {
+                updateSelectedMovie();
+                updateSelectedCount();
+            });
+
+            seats.forEach(seat => {
+                seat.addEventListener('click', () => {
+                    seat.classList.toggle('selected');
+                    updateSelectedSeats();
+                    updateSelectedCount();
+                });
+            });
+
+            updateSelectedCount();
+
+        
+        
+            
+        </script>
+
+</body>
+
+</html>
